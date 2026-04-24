@@ -3,7 +3,7 @@
 
 Used only when the user explicitly opts into CLI fallback mode.
 
-Defaults to gpt-image-1.5 and a structured prompt augmentation workflow.
+Defaults to gpt-image-2 and a structured prompt augmentation workflow.
 """
 
 from __future__ import annotations
@@ -21,16 +21,16 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from io import BytesIO
 
-DEFAULT_MODEL = "gpt-image-1.5"
-DEFAULT_SIZE = "1024x1024"
-DEFAULT_QUALITY = "auto"
+DEFAULT_MODEL = "gpt-image-2"
+DEFAULT_SIZE = "2048x1152"
+DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_CONCURRENCY = 5
 DEFAULT_DOWNSCALE_SUFFIX = "-web"
 DEFAULT_OUTPUT_PATH = "output/gpt-image/output.png"
 GPT_IMAGE_MODEL_PREFIX = "gpt-image-"
 
-ALLOWED_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
+ALLOWED_SIZES = {"1024x1024", "1536x1024", "1024x1536", "2048x1152", "2048x2048", "3840x2160", "2160x3840", "auto"}
 ALLOWED_QUALITIES = {"low", "medium", "high", "auto"}
 ALLOWED_BACKGROUNDS = {"transparent", "opaque", "auto", None}
 ALLOWED_INPUT_FIDELITIES = {"low", "high", None}
@@ -107,7 +107,7 @@ def _normalize_output_format(fmt: Optional[str]) -> str:
 def _validate_size(size: str) -> None:
     if size not in ALLOWED_SIZES:
         _die(
-            "size must be one of 1024x1024, 1536x1024, 1024x1536, or auto for GPT image models."
+            "size must be one of 1024x1024, 1536x1024, 1024x1536, 2048x1152, 2048x2048, 3840x2160, 2160x3840, or auto for GPT image models."
         )
 
 
