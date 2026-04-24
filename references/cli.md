@@ -62,12 +62,12 @@ python "$IMAGE_GEN" edit \
 - **Never modify** `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
 
 ## Defaults
-- Model: `gpt-image-1.5`
+- Model: `gpt-image-2`
 - Supported model family for this CLI: GPT Image models (`gpt-image-*`)
-- Size: `1024x1024`
-- Quality: `auto`
-- Output format: `png`
-- Default one-off output path: `output/gpt-image/output.png`
+- Size: `2048x1152`
+- Quality: `high`
+- Output format: `jpeg`
+- Default one-off output path: `output/gpt-image/output.jpeg`
 - Background: unspecified unless `--background` is set
 
 ## Quality, input fidelity, and masks (CLI fallback only)
@@ -151,7 +151,7 @@ Notes:
 - In batch mode, per-job `out` is treated as a filename under `--out-dir`.
 
 ## CLI notes
-- Supported sizes: `1024x1024`, `1536x1024`, `1024x1536`, or `auto`.
+- Supported sizes: `1024x1024`, `1536x1024`, `1024x1536`, `2048x2048`, `2048x1152`, `3840x2160`, `2160x3840` or `auto`.
 - Transparent backgrounds require `output_format` to be `png` or `webp`.
 - `--prompt-file`, `--output-compression`, `--moderation`, `--max-attempts`, `--fail-fast`, `--force`, and `--no-augment` are supported.
 - This CLI is intended for GPT Image models. Do not assume older non-GPT image-model behavior applies here.

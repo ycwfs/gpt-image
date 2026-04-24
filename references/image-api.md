@@ -5,7 +5,7 @@ This file is for the fallback CLI mode only. Use it only after the user explicit
 These parameters describe the Image API and bundled CLI fallback surface. Do not assume they are normal arguments on the host-native Codex-backed path.
 
 ## Scope
-- This fallback CLI is intended for GPT Image models (`gpt-image-1.5`, `gpt-image-1`, and `gpt-image-1-mini`).
+- This fallback CLI is intended for GPT Image models (`gpt-image-2`, `gpt-image-1.5`, and `gpt-image-1`, `gpt-image-1-mini`).
 - The host-native Codex-backed path and the fallback CLI do not expose the same controls.
 
 ## Endpoints
@@ -16,12 +16,18 @@ These parameters describe the Image API and bundled CLI fallback surface. Do not
 - `prompt`: text prompt
 - `model`: image model
 - `n`: number of images (1-10)
-- `size`: `1024x1024`, `1536x1024`, `1024x1536`, or `auto`
+- `size`: `1024x1024`, `1536x1024`, `1024x1536`, `2048x2048`, `2048x1152`, `3840x2160`, `2160x3840` or `auto`
 - `quality`: `low`, `medium`, `high`, or `auto`
 - `background`: output transparency behavior (`transparent`, `opaque`, or `auto`) for generated output; this is not the same thing as the prompt's visual scene/backdrop
 - `output_format`: `png` (default), `jpeg`, `webp`
 - `output_compression`: 0-100 (jpeg/webp only)
 - `moderation`: `auto` (default) or `low`
+
+## Size Constrain	
+- Maximum edge length must be less than or equal to 3840px
+- Both edges must be multiples of 16px
+- Long edge to short edge ratio must not exceed 3:1
+- Total pixels must be at least 655,360 and no more than 8,294,400
 
 ## Edit-specific parameters
 - `image`: one or more input images. For GPT Image models, you can provide up to 16 images.

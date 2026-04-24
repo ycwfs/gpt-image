@@ -36,6 +36,7 @@ Rules:
 - Never switch to CLI fallback automatically.
 - If Codex CLI is unavailable or cannot satisfy the request, tell the user the explicit CLI fallback exists and that it requires explicit opt-in plus `OPENAI_API_KEY`.
 - Never modify `scripts/image_gen.py` unless the user explicitly asks to change the bundled CLI.
+- Ask user if they don't specify the model to use.
 
 ## Host-native mode in Claude/Copilot
 
