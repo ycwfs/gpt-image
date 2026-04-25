@@ -1,12 +1,12 @@
 # Image API quick reference
 
-This file is for the fallback CLI mode only. Use it only after the user explicitly asks to use `scripts/image_gen.py` instead of the host-native Codex-backed path.
+This file documents the default CLI mode. Use it when the skill is running `scripts/image_gen.py`.
 
-These parameters describe the Image API and bundled CLI fallback surface. Do not assume they are normal arguments on the host-native Codex-backed path.
+These parameters describe the Image API and bundled CLI surface. Do not assume they are normal arguments on the Codex/native path.
 
 ## Scope
-- This fallback CLI is intended for GPT Image models (`gpt-image-2`, `gpt-image-1.5`, and `gpt-image-1`, `gpt-image-1-mini`).
-- The host-native Codex-backed path and the fallback CLI do not expose the same controls.
+- This CLI is intended for GPT Image models (`gpt-image-2`, `gpt-image-1.5`, and `gpt-image-1`, `gpt-image-1-mini`).
+- The Codex/native path and the CLI path do not expose the same controls.
 
 ## Endpoints
 - Generate: `POST /v1/images/generations` (`client.images.generate(...)`)
@@ -51,5 +51,5 @@ Model-specific note for `input_fidelity`:
 - If a request fails because a specific option is unsupported by the selected GPT Image model, retry manually without that option.
 
 ## Important boundary
-- `quality`, `input_fidelity`, explicit masks, `background`, `output_format`, and related parameters are fallback-only execution controls.
-- Do not assume they are arguments on the host-native Codex-backed path.
+- `quality`, `input_fidelity`, explicit masks, `background`, `output_format`, and related parameters are CLI-only execution controls.
+- Do not assume they are arguments on the Codex/native path.

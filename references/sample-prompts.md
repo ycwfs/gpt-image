@@ -1,8 +1,8 @@
 # Sample prompts (copy/paste)
 
 These prompt recipes are shared across both top-level modes of the skill:
-- host-native image mode (default)
-- explicit `scripts/image_gen.py` CLI fallback
+- explicit `scripts/image_gen.py` CLI mode (default)
+- Codex/native image mode (explicit opt-in)
 
 Use these as starting points. They are intentionally complete prompt recipes, not the default amount of augmentation to add to every user request.
 
@@ -13,7 +13,7 @@ When adapting a user's prompt:
 
 The labeled lines are prompt scaffolding, not a closed schema. `Asset type` and `Input images` are prompt-only scaffolding; the CLI does not expose them as dedicated flags.
 
-Execution details such as explicit CLI flags, `quality`, `input_fidelity`, masks, `background`, output formats, and local output paths depend on mode. Use the host-native Codex-backed path by default; only apply CLI-specific controls after the user explicitly opts into fallback mode.
+Execution details such as explicit CLI flags, `quality`, `input_fidelity`, masks, `background`, output formats, and local output paths depend on mode. Use the CLI path by default; only switch to Codex/native mode after explicit user opt-in.
 
 For prompting principles (structure, specificity, invariants, iteration), see `references/prompting.md`.
 
@@ -360,8 +360,8 @@ Constraints: crisp silhouette; no halos or fringing; preserve label text exactly
 ### style-transfer
 ```
 Use case: style-transfer
-Input images: Image 1: style reference
-Primary request: apply Image 1's visual style to a man riding a motorcycle on a plain white backdrop
+Input images: Image 1: edit target; Image 2: style reference
+Primary request: restyle Image 1 using the visual style of Image 2
 Constraints: preserve palette, texture, and brushwork; no extra elements
 ```
 

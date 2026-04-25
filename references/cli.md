@@ -1,8 +1,8 @@
 # CLI reference (`scripts/image_gen.py`)
 
-This file is for the fallback CLI mode only. Read it only after the user explicitly asks to use `scripts/image_gen.py` instead of the host-native Codex-backed path.
+This file documents the default CLI mode. Read it whenever the skill is using `scripts/image_gen.py`.
 
-`generate-batch` is a CLI subcommand in this fallback path. It is not a top-level mode of the skill.
+`generate-batch` is a CLI subcommand in this default path. It is not a top-level mode of the skill.
 
 ## What this CLI does
 - `generate`: generate a new image from a prompt
@@ -66,12 +66,12 @@ python "$IMAGE_GEN" edit \
 - Supported model family for this CLI: GPT Image models (`gpt-image-*`)
 - Size: `2048x1152`
 - Quality: `high`
-- Output format: `jpeg`
-- Default one-off output path: `output/gpt-image/output.jpeg`
+- Output format: `png`
+- Default one-off output path: `output/gpt-image/output.png`
 - Background: unspecified unless `--background` is set
 
-## Quality, input fidelity, and masks (CLI fallback only)
-These are explicit CLI controls. They are not arguments on the host-native Codex-backed path.
+## Quality, input fidelity, and masks (CLI mode only)
+These are explicit CLI controls. They are not arguments on the Codex/native path.
 
 - `--quality` works for `generate`, `edit`, and `generate-batch`: `low|medium|high|auto`
 - `--input-fidelity` is **edit-only** and validated as `low|high`
@@ -157,5 +157,5 @@ Notes:
 - This CLI is intended for GPT Image models. Do not assume older non-GPT image-model behavior applies here.
 
 ## See also
-- API parameter quick reference for fallback CLI mode: `references/image-api.md`
+- API parameter quick reference for CLI mode: `references/image-api.md`
 - Prompt examples shared across both top-level modes: `references/sample-prompts.md`

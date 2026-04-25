@@ -1,10 +1,10 @@
 # Prompting best practices
 
 These prompting principles are shared by both top-level modes of the skill:
-- host-native image mode (default)
-- explicit `scripts/image_gen.py` CLI fallback
+- explicit `scripts/image_gen.py` CLI mode (default)
+- Codex/native image mode (explicit opt-in)
 
-This file is about prompt structure, specificity, and iteration. Fallback-only execution controls such as `quality`, `input_fidelity`, masks, output format, and output paths live in the fallback docs.
+This file is about prompt structure, specificity, and iteration. CLI-only execution controls such as `quality`, `input_fidelity`, masks, output format, and output paths live in the CLI docs.
 
 ## Contents
 - [Structure](#structure)
@@ -14,8 +14,9 @@ This file is about prompt structure, specificity, and iteration. Fallback-only e
 - [Constraints and invariants](#constraints-and-invariants)
 - [Text in images](#text-in-images)
 - [Input images and references](#input-images-and-references)
+- [Ask for missing parameters](#ask-for-missing-parameters)
 - [Iterate deliberately](#iterate-deliberately)
-- [Fallback-only execution controls](#fallback-only-execution-controls)
+- [CLI-only execution controls](#cli-only-execution-controls)
 - [Use-case tips](#use-case-tips)
 - [Where to find copy/paste recipes](#where-to-find-copypaste-recipes)
 
@@ -63,16 +64,23 @@ Do not add:
 - If the user asks to preserve an existing image while changing specific parts, treat the request as an edit.
 - For compositing, describe how the images interact (`place the subject from Image 2 into Image 1`).
 
+## Ask for missing parameters
+- Do not silently choose image parameters when the user did not specify them.
+- For generate, ask about missing `model`, `size`/aspect ratio, `quality`, whether to include text, exact text, and output format/background behavior when relevant.
+- For edit, ask about missing `model`, edit target, scope of change, invariants, `quality`, `input_fidelity`, mask usage, and output format/background behavior when relevant.
+- If the request is visually too vague to execute reliably, ask for the missing style/use-case direction before running.
+- If the user explicitly says "use defaults", you may proceed with the documented CLI defaults.
+
 ## Iterate deliberately
 - Start with a clean base prompt, then make small single-change edits.
 - Re-specify critical constraints when you iterate.
 - Prefer one targeted follow-up at a time over rewriting the whole prompt.
 
-## Fallback-only execution controls
-- `quality`, `input_fidelity`, explicit masks, `background`, output format, and CLI output-path flags are fallback-only execution controls.
-- In host-native mode, ask Codex in the prompt to save the selected final into the workspace (for example `output/gpt-image/...`).
-- Do not assume they are arguments on the host-native Codex-backed path.
-- If the user explicitly chooses CLI fallback, see `references/cli.md` and `references/image-api.md` for those controls.
+## CLI-only execution controls
+- `quality`, `input_fidelity`, explicit masks, `background`, output format, and CLI output-path flags are CLI-only execution controls.
+- In Codex mode, ask Codex in the prompt to save the selected final into the workspace (for example `output/gpt-image/...`).
+- Do not assume they are arguments on the Codex/native path.
+- Since CLI mode is the default, see `references/cli.md` and `references/image-api.md` first for those controls.
 
 ## Use-case tips
 Generate:

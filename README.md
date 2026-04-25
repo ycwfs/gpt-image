@@ -1,38 +1,25 @@
 # GPT Image
 
-A cross-runtime image skill for Claude Code and GitHub Copilot CLI that keeps the original two-mode design, but redefines the preferred "host-native" path as a **Codex CLI bridge**.
+A cross-runtime image skill for Claude Code and GitHub Copilot CLI that uses the bundled GPT Image CLI as the default path, with an explicit Codex mode when the user asks for it.
 
 [中文说明 / Chinese README](./README_ZH.md)
 
 ## Features
 
-- **Host-native generation via Codex CLI** - Use Codex's built-in image workflow from Claude/Copilot without needing `OPENAI_API_KEY`
-- **Explicit GPT Image CLI fallback** - Use the bundled `scripts/image_gen.py` when the user explicitly wants script/API mode
+- **CLI-first generation** - Use the bundled `scripts/image_gen.py` by default for generation and editing
+- **Explicit Codex mode** - Use Codex's built-in image workflow only when the user explicitly wants Codex/native generation
 - **Image editing** - Support direct edits, reference-guided generation, and compositing flows
-- **Batch generation in explicit CLI mode** - Use `generate-batch` for many prompts only when the user explicitly opts into the fallback
+- **Batch generation in CLI mode** - Use `generate-batch` for many prompts in the default CLI workflow
 - **Shared prompting system** - Reuse the same prompt structure across both modes
 
 ## Two Modes
 
 | Mode | When to use | Backend | Needs `OPENAI_API_KEY` |
 |---|---|---|---|
-| Host-native (preferred) | Normal generation/edit requests from Claude or Copilot | `codex exec` -> Codex built-in image workflow | No |
-| Explicit CLI | User explicitly asks for CLI/script/API mode or CLI-only controls | `scripts/image_gen.py` | Yes |
+| Explicit CLI (default) | Normal generation/edit requests unless the user explicitly asks for Codex/native generation | `scripts/image_gen.py` | Yes |
+| Codex mode | User explicitly asks for Codex, native generation, or Codex CLI | `codex exec` -> Codex built-in image workflow | No |
 
 ## Prerequisites
-
-### Host-native mode
-
-1. **Codex CLI installed** via `npm i -g @openai/codex`
-2. **Codex authenticated** via `codex login`
-3. **This skill available to Claude/Copilot** in the runtime's custom skill path
-
-Quick checks:
-
-```bash
-codex --help
-codex exec --help
-```
 
 ### Explicit CLI mode
 
@@ -45,6 +32,19 @@ Install dependencies if needed:
 ```bash
 pip install openai # or use uv pip install openai
 pip install pillow  # optional, for downscaling only
+```
+
+### Codex mode
+
+1. **Codex CLI installed** via `npm i -g @openai/codex`
+2. **Codex authenticated** via `codex login`
+3. **This skill available to Claude/Copilot** in the runtime's custom skill path
+
+Quick checks:
+
+```bash
+codex --help
+codex exec --help
 ```
 
 ## Installation
@@ -69,39 +69,9 @@ Keep the `gpt-image` folder in the location your Copilot-style runtime exposes t
 
 ## How It Works
 
-### Host-native mode in Claude/Copilot
+### Default CLI mode
 
-Claude or Copilot should **not** pretend they can call an image tool directly. Instead, they should run Codex CLI and let Codex use its own built-in image workflow.
-
-Recommended pattern:
-
-```bash
-codex exec -C "$PWD" --skip-git-repo-check \
-  "Generate a blog header image for a post about AI agents. Save the selected final to output/gpt-image/blog-header.png and report the final path. Use Codex's built-in image workflow, not scripts/image_gen.py."
-```
-
-For local edit targets or reference images, attach files with `-i`:
-
-```bash
-codex exec -C "$PWD" --skip-git-repo-check -i input.png -i style-ref.png \
-  "Image 1 is the edit target. Image 2 is a style reference. Replace only the background, keep the subject unchanged, and save the final to output/gpt-image/input-edited.png."
-```
-
-Notes:
-
-- Use `-C "$PWD"` so Codex works in the current workspace.
-- Add `--skip-git-repo-check` when you are outside a Git repo.
-- Ask Codex to move or copy the selected final into your workspace if the image is project-bound.
-- Codex may first write images under `$CODEX_HOME/generated_images/...`; do not leave project assets there permanently.
-
-### Explicit CLI mode
-
-Use this only when the user explicitly asks for:
-
-- CLI mode
-- script mode
-- direct GPT Image API control
-- CLI-only parameters such as `quality`, `input_fidelity`, masks, `background`, `generate-batch`, `model` or output-format control
+Unless the user explicitly asks for Codex/native generation, use the bundled CLI directly.
 
 Set stable paths:
 
@@ -136,6 +106,38 @@ python "$IMAGE_GEN" generate-batch \
   --out-dir output/gpt-image/batch
 ```
 
+Ask for missing parameters before running. At minimum, do not silently assume `model`, `size`, `quality`, text inclusion/exact copy, or edit fidelity/mask behavior unless the user explicitly says to use defaults.
+
+### Codex mode in Claude/Copilot
+
+Use this only when the user explicitly asks for:
+
+- Codex mode
+- native generation
+- Codex CLI
+- Codex's built-in image workflow
+
+Recommended pattern:
+
+```bash
+codex exec -C "$PWD" --skip-git-repo-check \
+  "Generate a blog header image for a post about AI agents. Save the selected final to output/gpt-image/blog-header.png and report the final path. Use Codex's built-in image workflow, not scripts/image_gen.py."
+```
+
+For local edit targets or reference images, attach files with `-i`:
+
+```bash
+codex exec -C "$PWD" --skip-git-repo-check -i input.png -i style-ref.png \
+  "Image 1 is the edit target. Image 2 is a style reference. Replace only the background, keep the subject unchanged, and save the final to output/gpt-image/input-edited.png."
+```
+
+Notes:
+
+- Use `-C "$PWD"` so Codex works in the current workspace.
+- Add `--skip-git-repo-check` when you are outside a Git repo.
+- Ask Codex to move or copy the selected final into your workspace if the image is project-bound.
+- Codex may first write images under `$CODEX_HOME/generated_images/...`; do not leave project assets there permanently.
+
 ## Usage
 
 Once installed, the skill should activate for requests like:
@@ -148,10 +150,11 @@ Once installed, the skill should activate for requests like:
 
 ### Mode selection rules
 
-1. Default to **host-native mode** through Codex CLI.
-2. Switch to **explicit CLI mode** only after explicit user opt-in.
+1. Default to **explicit CLI mode**.
+2. Switch to **Codex mode** only after explicit user opt-in.
 3. Never ask the user to paste API keys into chat.
-4. For project assets, save finals under `output/gpt-image/`.
+4. Ask about missing image parameters before execution, unless the user explicitly says to use defaults.
+5. For project assets, save finals under `output/gpt-image/`.
 
 ## Prompt Structure
 
@@ -181,16 +184,16 @@ See:
 
 ## Output Conventions
 
-### Host-native mode
-
-- Codex may initially save images under `$CODEX_HOME/generated_images/...`
-- Move or copy selected finals into the workspace before finishing
-- Prefer `output/gpt-image/` for project assets
-
 ### Explicit CLI mode
 
 - Finals: `output/gpt-image/`
 - Temporary scratch files: `tmp/gpt-image/`
+
+### Codex mode
+
+- Codex may initially save images under `$CODEX_HOME/generated_images/...`
+- Move or copy selected finals into the workspace before finishing
+- Prefer `output/gpt-image/` for project assets
 
 ## Troubleshooting
 
@@ -201,14 +204,15 @@ See:
 | `OPENAI_API_KEY` missing | Export it locally in your shell, not in chat |
 | Use `OPENAI_BASE_URL` to choice third part api provider | Export it locally in your shell, not in chat |
 | `openai` package missing | Run `uv pip install openai` |
+| Missing model / size / quality / text settings | Ask the user before running, or use defaults only if they explicitly allow it |
 | Need masks / `quality` / `input_fidelity` / `background` control | Use explicit CLI mode |
-| Need a predictable workspace output path | Tell Codex to save the selected final into `output/gpt-image/` |
+| Need a predictable workspace output path in Codex mode | Tell Codex to save the selected final into `output/gpt-image/` |
 
 ## Reference Map
 
-- `SKILL.md` - runtime-facing instructions for Claude/Copilot/Codex
+- `SKILL.md` - runtime-facing instructions for CLI-first mode selection and Codex opt-in
 - `references/prompting.md` - shared prompting guidance
 - `references/sample-prompts.md` - copy/paste prompt recipes
-- `references/cli.md` - explicit CLI fallback usage
+- `references/cli.md` - default CLI usage
 - `references/image-api.md` - explicit CLI/API parameter reference
-- `scripts/image_gen.py` - bundled explicit CLI implementation
+- `scripts/image_gen.py` - bundled CLI implementation
